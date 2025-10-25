@@ -3,6 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface AdminUser {
@@ -79,14 +83,16 @@ export interface OrderValidation {
   validated_at: string;
 }
 
-export const loginAdmin = async (username: string): Promise<AdminUser | null> => {
+export const loginAdmin = async (username: string, password: string): Promise<AdminUser | null> => {
   const { data, error } = await supabase
     .from('admin_users')
     .select('*')
     .eq('username', username)
+    .eq('password_hash', password)
     .maybeSingle();
 
   if (error || !data) {
+    console.error('Login error:', error);
     return null;
   }
 

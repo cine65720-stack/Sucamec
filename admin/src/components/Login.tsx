@@ -17,7 +17,7 @@ export default function Login({ onLogin }: LoginProps) {
     setLoading(true);
 
     try {
-      const user = await loginAdmin(username);
+      const user = await loginAdmin(username, password);
 
       if (user) {
         onLogin(user);
